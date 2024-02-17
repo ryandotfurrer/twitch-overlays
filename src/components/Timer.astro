@@ -1,0 +1,30 @@
+---
+const countdownTimer = () => {
+let minutes = 5;
+let seconds = 0;
+
+const timerInterval = setInterval(() => {
+// Display the current time
+console.log(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+
+// Check if the timer has reached 0:00
+if (minutes === 0 && seconds === 0) {
+console.log('Countdown finished!');
+clearInterval(timerInterval); // Stop the timer when it reaches 0:00
+} else {
+// Decrement the time
+if (seconds === 0) {
+minutes--;
+seconds = 59;
+} else {
+seconds--;
+}
+}
+}, 1000); // Update every second
+}
+
+// Start the countdown timer
+countdownTimer();
+---
+
+<div>{countdownTimer}</div>
