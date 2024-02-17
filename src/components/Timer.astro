@@ -1,30 +1,70 @@
 ---
-const countdownTimer = () => {
-let minutes = 5;
-let seconds = 0;
+const searchObj = { minutes: 0, seconds: 0 }
 
-const timerInterval = setInterval(() => {
-// Display the current time
-console.log(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+type queryKey = keyof typeof searchObj
 
-// Check if the timer has reached 0:00
-if (minutes === 0 && seconds === 0) {
-console.log('Countdown finished!');
-clearInterval(timerInterval); // Stop the timer when it reaches 0:00
-} else {
-// Decrement the time
-if (seconds === 0) {
-minutes--;
-seconds = 59;
-} else {
-seconds--;
-}
-}
-}, 1000); // Update every second
-}
+const { minutes: propMinutes = 5, seconds: propSeconds = 0 } = Astro.props
 
-// Start the countdown timer
-countdownTimer();
+http://Astro.url.search
+.slice(1)
+.split('&')
+.forEach((term) => {
+const [key, value] = term.split('=')
+
+searchObj[key as queryKey] = parseInt(value)
+return searchObj
+})
+
+const minutes = searchObj.minutes > 0 ? searchObj.minutes : propMinutes
+
+const seconds = searchObj.seconds > 0 ? searchObj.seconds : propSeconds
 ---
 
-<div>{countdownTimer}</div>
+<div>
+<div class="scene-timer" id="countdown"></div>
+</div>
+<script define:vars={{ minutes, seconds }}>
+var timeInSecs
+var ticker
+
+function tick() {
+var secs = timeInSecs
+if (secs > 0) {
+timeInSecs--
+} else {
+clearInterval(ticker)
+startTimer(5 * 60) // 4 minutes in seconds
+}
+
+function startTimer(secs) {
+timeInSecs = parseInt(secs)
+ticker = setInterval(tick, 1000)
+}
+
+var mins = Math.floor(secs / 60)
+secs %= 60
+var pretty = (mins < 10 ? '' : '') + mins + ':' + (secs < 10 ? '0' : '') + secs
+
+document.getElementById('countdown').innerHTML = pretty
+}
+
+function startTimer(secs) {
+timeInSecs = parseInt(secs)
+ticker = setInterval(tick, 1000)
+}
+startTimer(minutes * 60 + seconds)
+</script>
+
+<style lang="scss">
+@import
+ '../styles/variables.scss';
+.scene-timer {
+color: #ff3fbe;
+font-family: $fontLogo;
+font-size: 144px;
+line-height: 144px;
+
+@apply
+ mt-8;
+}
+</style>
